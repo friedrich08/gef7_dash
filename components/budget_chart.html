@@ -1,0 +1,144 @@
+{% load static %}
+{% load custom_filters %}
+<div class="card card-unep shadow-sm mb-4">
+    <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 text-unep">Budget Allocation by Partner</h5>
+        <div class="dropdown">
+            <button class="btn btn-sm btn-outline-unep dropdown-toggle" type="button" id="budgetChartDropdown" data-bs-toggle="dropdown">
+                <i class="bi bi-funnel me-1"></i>View Options
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item active" href="#" data-view="total">Total Budget</a></li>
+                <li><a class="dropdown-item" href="#" data-view="spent">Spent vs Available</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="chart-container" style="position: relative; height:300px; width:100%;">
+            <canvas id="budgetChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Données de test si budget_data n'est pas disponible
+    const budgetData = {{ budget_data|safe|default:"[]" }};
+    
+    // Si pas de données, utiliser les données actuelles du projet GEF 7 Congo IP
+    const chartData = budgetData.length > 0 ? budgetData : [
+        { label: 'US Forest Service', value: 17436678.6, spent: 553374.6, available: 16883304 },
+        { label: 'WCMC', value: 6469000, spent: 350000, available: 6119000 },
+        { label: 'CITES MIKE', value: 2389486, spent: 2389486, available: 0 },
+        { label: 'Rainforest Alliance', value: 500000, spent: 99998.6, available: 400000 },
+        { label: 'WCS', value: 400000, spent: 300000, available: 100000 },
+        { label: 'COMIFAC', value: 413270, spent: 0, available: 413270 },
+        { label: 'RE:wild', value: 289280, spent: 249280, available: 40000 },
+        { label: 'Woodwell Climate', value: 99998.6, spent: 99998.6, available: 0 }
+    ];
+
+    const ctx = document.getElementById('budgetChart');
+    if (!ctx) {
+        console.error('Budget chart canvas not found');
+        return;
+    }
+
+    const chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: chartData.map(item => item.label),
+            datasets: [{
+                label: 'Total Budget',
+                data: chartData.map(item => item.value),
+                backgroundColor: '#1e88e5',
+                borderColor: '#1565c0',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `Budget: $${context.parsed.y.toLocaleString()}`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            if (value >= 1000000) {
+                                return '$' + (value / 1000000).toFixed(1) + 'M';
+                            } else if (value >= 1000) {
+                                return '$' + (value / 1000).toFixed(1) + 'K';
+                            }
+                            return '$' + value;
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Amount (USD)'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Partners'
+                    }
+                }
+            }
+        }
+    });
+    
+    // Switch between total budget and spent/available views
+    document.querySelectorAll('#budgetChartDropdown .dropdown-item').forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            document.querySelectorAll('#budgetChartDropdown .dropdown-item').forEach(i => {
+                i.classList.remove('active');
+            });
+            this.classList.add('active');
+            
+            const viewType = this.getAttribute('data-view');
+            
+            if (viewType === 'total') {
+                chart.data.datasets = [{
+                    label: 'Total Budget',
+                    data: chartData.map(item => item.value),
+                    backgroundColor: '#1e88e5',
+                    borderColor: '#1565c0',
+                    borderWidth: 1
+                }];
+            } else if (viewType === 'spent') {
+                chart.data.datasets = [
+                    {
+                        label: 'Spent',
+                        data: chartData.map(item => item.spent || 0),
+                        backgroundColor: '#1e88e5',
+                        borderColor: '#1565c0',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Available',
+                        data: chartData.map(item => item.available || 0),
+                        backgroundColor: '#90caf9',
+                        borderColor: '#64b5f6',
+                        borderWidth: 1
+                    }
+                ];
+            }
+            
+            chart.update();
+        });
+    });
+});
+</script>

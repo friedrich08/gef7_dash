@@ -1,0 +1,138 @@
+{% load static %}
+{% load custom_filters %}
+
+<div class="card card-unep shadow-sm mb-4">
+    <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 text-unep">Progress by Partner</h5>
+        <div class="dropdown">
+            <button class="btn btn-sm btn-outline-unep dropdown-toggle" type="button" id="progressChartDropdown" data-bs-toggle="dropdown">
+                <i class="bi bi-funnel me-1"></i>Filter
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item active" href="#" data-filter="all">All Partners</a></li>
+                <li><a class="dropdown-item" href="#" data-filter="below-50">Below 50%</a></li>
+                <li><a class="dropdown-item" href="#" data-filter="above-50">Above 50%</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="chart-container" style="position: relative; height:300px; width:100%;">
+            <canvas id="progressChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Données de test si progress_data n'est pas disponible
+        const progressData = {{ progress_data|safe|default:"[]" }};
+        
+        // Si pas de données, utiliser des données de test
+        const chartData = progressData.length > 0 ? progressData : [
+            { label: 'COMIFAC', value: 100 },
+            { label: 'REPALEAC', value: 100 },
+            { label: 'RAIN', value: 100 },
+            { label: 'REWILD', value: 100 },
+            { label: 'UNODC', value: 100 },
+            { label: 'USFS', value: 100 },
+            { label: 'WCMC', value: 100 },
+            { label: 'WCS', value: 100 },
+            { label: 'WOODWELL', value: 100 },
+            { label: 'LJMU', value: 100 },
+            { label: 'CITES', value: 100 }
+        ];
+        
+        const ctx = document.getElementById('progressChart').getContext('2d');
+        const chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: chartData.map(item => item.label),
+                datasets: [{
+                    label: 'Progress (%)',
+                    data: chartData.map(item => item.value),
+                    backgroundColor: chartData.map(item => 
+                        item.value < 50 ? '#ef5350' : 
+                        item.value < 80 ? '#ffa726' : '#66bb6a'
+                    ),
+                    borderColor: chartData.map(item => 
+                        item.value < 50 ? '#e53935' : 
+                        item.value < 80 ? '#f57c00' : '#43a047'
+                    ),
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `Progress: ${context.parsed.y}%`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Progress (%)'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Partners'
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Filter partners by progress
+        document.querySelectorAll('#progressChartDropdown .dropdown-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                document.querySelectorAll('#progressChartDropdown .dropdown-item').forEach(i => {
+                    i.classList.remove('active');
+                });
+                this.classList.add('active');
+                
+                const filterType = this.getAttribute('data-filter');
+                
+                let filteredData = chartData;
+                
+                if (filterType === 'below-50') {
+                    filteredData = chartData.filter(item => item.value < 50);
+                } else if (filterType === 'above-50') {
+                    filteredData = chartData.filter(item => item.value >= 50);
+                }
+                
+                chart.data.labels = filteredData.map(item => item.label);
+                chart.data.datasets[0].data = filteredData.map(item => item.value);
+                chart.data.datasets[0].backgroundColor = filteredData.map(item => 
+                    item.value < 50 ? '#ef5350' : 
+                    item.value < 80 ? '#ffa726' : '#66bb6a'
+                );
+                chart.data.datasets[0].borderColor = filteredData.map(item => 
+                    item.value < 50 ? '#e53935' : 
+                    item.value < 80 ? '#f57c00' : '#43a047'
+                );
+                
+                chart.update();
+            });
+        });
+    });
+</script>

@@ -1,0 +1,129 @@
+{% load static %}
+{% load custom_filters %}
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-unep sticky-top">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="/">
+            <div class="bg-white rounded p-1 me-2">
+                <i class="bi bi-tree-fill text-unep fs-4"></i>
+            </div>
+            <span class="h5 mb-0">GEF 7 Partners Contract Tracking</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="navbarContent">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" href="/">
+                        <i class="bi bi-speedometer2 me-1"></i>Dashboard
+                    </a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="componentsDropdown" role="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-grid me-1"></i>Components
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="/?component=COMP1">
+                            <i class="bi bi-map text-primary me-2"></i>
+                            Component 1: Land Use Planning
+                        </a></li>
+                        <li><a class="dropdown-item" href="/?component=COMP2">
+                            <i class="bi bi-tools text-success me-2"></i>
+                            Component 2: Management Interventions
+                        </a></li>
+                        <li><a class="dropdown-item" href="/?component=COMP3">
+                            <i class="bi bi-people-fill text-warning me-2"></i>
+                            Component 3: Community Empowerment
+                        </a></li>
+                        <li><a class="dropdown-item" href="/?component=COMP4">
+                            <i class="bi bi-lightbulb text-info me-2"></i>
+                            Component 4: Knowledge Management
+                        </a></li>
+                        <li><a class="dropdown-item" href="/?component=COMP5">
+                            <i class="bi bi-gear text-secondary me-2"></i>
+                            Component 5: Program Coordination
+                        </a></li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-building me-1"></i>Partners
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-file-earmark-text me-1"></i>Reports
+                    </a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="settingsDropdown" role="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-person me-1"></i>Admin
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="#">
+                            <i class="bi bi-person-circle me-2"></i>Profile
+                        </a></li>
+                        <li><a class="dropdown-item" href="#">
+                            <i class="bi bi-shield-check me-2"></i>Security
+                        </a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="#">
+                            <i class="bi bi-box-arrow-right me-2"></i>Logout
+                        </a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<style>
+.navbar-dark.bg-unep {
+    background: linear-gradient(135deg, #1e88e5 0%, #1565c0 100%) !important;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.navbar-brand {
+    font-weight: 600;
+}
+
+.navbar-nav .nav-link {
+    border-radius: 4px;
+    margin: 0 2px;
+    transition: all 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link.active {
+    background: rgba(255,255,255,0.15);
+}
+
+.dropdown-menu {
+    border: none;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    border-radius: 8px;
+}
+
+.dropdown-item {
+    border-radius: 4px;
+    margin: 2px;
+}
+
+.dropdown-item:hover {
+    background: #f8f9fa;
+}
+
+/* Responsive */
+@media (max-width: 991.98px) {
+    .navbar-nav .nav-link {
+        margin: 0.1rem 0;
+    }
+    
+    .dropdown-menu {
+        border: none !important;
+        box-shadow: none !important;
+    }
+}
+</style>

@@ -1,0 +1,128 @@
+{% load static %}
+{% load custom_filters %}
+
+<div class="card card-unep shadow-sm mb-4">
+    <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 text-unep">Report Status Overview</h5>
+        <div class="dropdown">
+            <button class="btn btn-sm btn-outline-unep dropdown-toggle" type="button" id="reportStatusDropdown" data-bs-toggle="dropdown">
+                <i class="bi bi-download me-1"></i>Export
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="#"><i class="bi bi-filetype-pdf me-2"></i>PDF Report</a></li>
+                <li><a class="dropdown-item" href="#"><i class="bi bi-file-earmark-excel me-2"></i>Excel Export</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="chart-container" style="position: relative; height:300px; width:100%;">
+                    <canvas id="reportStatusChart"></canvas>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="mt-4">
+                    <h6 class="text-unep mb-3">Report Status Distribution</h6>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="d-flex align-items-center">
+                                <span class="dot bg-success me-2" style="width: 8px; height: 8px; border-radius: 50%; display: inline-block;"></span>
+                                Validated
+                            </span>
+                            <span class="badge bg-success rounded-pill">{{ report_status_counts.validated }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="d-flex align-items-center">
+                                <span class="dot bg-warning me-2" style="width: 8px; height: 8px; border-radius: 50%; display: inline-block;"></span>
+                                Review in Progress
+                            </span>
+                            <span class="badge bg-warning rounded-pill">{{ report_status_counts.review_in_progress }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="d-flex align-items-center">
+                                <span class="dot bg-danger me-2" style="width: 8px; height: 8px; border-radius: 50%; display: inline-block;"></span>
+                                Not Received
+                            </span>
+                            <span class="badge bg-danger rounded-pill">{{ report_status_counts.not_received }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="d-flex align-items-center">
+                                <span class="dot bg-info me-2" style="width: 8px; height: 8px; border-radius: 50%; display: inline-block;"></span>
+                                Not Validated
+                            </span>
+                            <span class="badge bg-info rounded-pill">{{ report_status_counts.not_validated }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="d-flex align-items-center">
+                                <span class="dot bg-primary me-2" style="width: 8px; height: 8px; border-radius: 50%; display: inline-block;"></span>
+                                Received
+                            </span>
+                            <span class="badge bg-primary rounded-pill">{{ report_status_counts.received }}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const reportStatusData = {
+        labels: ['Validated', 'Review in Progress', 'Not Received', 'Not Validated', 'Received'],
+        datasets: [{
+            data: [
+                {{ report_status_counts.validated|default:0 }},
+                {{ report_status_counts.review_in_progress|default:0 }},
+                {{ report_status_counts.not_received|default:0 }},
+                {{ report_status_counts.not_validated|default:0 }},
+                {{ report_status_counts.received|default:0 }}
+            ],
+            backgroundColor: [
+                '#66bb6a', // Validated (green)
+                '#ffa726', // Review in Progress (orange)
+                '#ef5350', // Not Received (red)
+                '#42a5f5', // Not Validated (blue)
+                '#29b6f6'  // Received (light blue)
+            ],
+            borderColor: [
+                '#43a047',
+                '#fb8c00',
+                '#e53935',
+                '#1e88e5',
+                '#039be5'
+            ],
+            borderWidth: 1
+        }]
+    };
+    
+    const ctx = document.getElementById('reportStatusChart');
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: reportStatusData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.parsed || 0;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
+                                return `${label}: ${value} (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+});
+</script>

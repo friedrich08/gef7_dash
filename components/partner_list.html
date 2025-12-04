@@ -1,0 +1,401 @@
+<!-- partners/templates/partners/partner_list.html -->
+{% extends 'partners/base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h2 text-unep fw-bold">Partners Directory</h1>
+        <p class="text-muted mb-0">Complete overview of all project partners</p>
+    </div>
+    <div class="d-flex align-items-center">
+        <span class="badge bg-unep fs-6">{{ total_partners }} Partners</span>
+    </div>
+</div>
+
+<!-- Filtres et Recherche -->
+<div class="card card-unep shadow-sm mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label small text-muted mb-1">Search Partners</label>
+                <input type="text" 
+                       class="form-control" 
+                       name="search" 
+                       placeholder="Search by name, component..."
+                       value="{{ search_query }}">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small text-muted mb-1">Filter by Component</label>
+                <select class="form-select" name="component">
+                    <option value="">All Components</option>
+                    {% for value, label in COMPONENT_CHOICES %}
+                    <option value="{{ value }}" {% if current_component == value %}selected{% endif %}>
+                        {{ label }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small text-muted mb-1">Filter by Status</label>
+                <select class="form-select" name="status">
+                    <option value="">All Statuses</option>
+                    {% for value, label in REPORT_STATUS_CHOICES %}
+                    <option value="{{ value }}" {% if current_status == value %}selected{% endif %}>
+                        {{ label }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-unep w-100">
+                    <i class="bi bi-funnel me-1"></i>Apply Filters
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Statistiques des Filtres -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card card-unep shadow-sm h-100">
+            <div class="card-header bg-white border-0">
+                <h6 class="mb-0 text-unep">Components Distribution</h6>
+            </div>
+            <div class="card-body">
+                {% for stat in component_stats %}
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="small">
+                        <i class="bi bi-circle-fill me-2 text-{{ forloop.counter }}"></i>
+                        {{ stat.component }}
+                    </span>
+                    <div class="d-flex align-items-center">
+                        <span class="badge bg-light text-dark me-2">{{ stat.count }}</span>
+                        <small class="text-muted">{{ stat.avg_progress|floatformat:1 }}% avg</small>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card card-unep shadow-sm h-100">
+            <div class="card-header bg-white border-0">
+                <h6 class="mb-0 text-unep">Report Status Overview</h6>
+            </div>
+            <div class="card-body">
+                {% for stat in status_stats %}
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="small">
+                        <i class="bi bi-file-earmark-text me-2"></i>
+                        {{ stat.report_status }}
+                    </span>
+                    <span class="badge {% if stat.report_status == 'VPM' %}bg-success{% elif stat.report_status == 'NR' %}bg-danger{% else %}bg-warning{% endif %}">
+                        {{ stat.count }}
+                    </span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Liste des Partenaires -->
+<div class="card card-unep shadow-sm">
+    <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 text-unep">Partners List</h5>
+        <div class="dropdown">
+            <button class="btn btn-sm btn-outline-unep dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                <i class="bi bi-download me-1"></i>Export
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="#"><i class="bi bi-filetype-csv me-2"></i>CSV Export</a></li>
+                <li><a class="dropdown-item" href="#"><i class="bi bi-file-earmark-excel me-2"></i>Excel Export</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-4">Partner</th>
+                        <th>Component</th>
+                        <th>Budget</th>
+                        <th>Progress</th>
+                        <th>Timeline</th>
+                        <th>Reports</th>
+                        <th>Risk</th>
+                        <th class="pe-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for partner in partners %}
+                    <tr class="partner-row">
+                        <td class="ps-4">
+                            <div class="d-flex align-items-center">
+                                <div class="partner-avatar bg-unep-subtle rounded-circle p-2 me-3">
+                                    <i class="bi bi-building text-unep"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-bold text-dark">{{ partner.get_name_display }}</div>
+                                    <small class="text-muted">
+                                        {% if partner.extension_needed %}
+                                        <i class="bi bi-clock-history text-warning me-1"></i>Extension needed
+                                        {% else %}
+                                        <i class="bi bi-check-circle text-success me-1"></i>On track
+                                        {% endif %}
+                                    </small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-dark component-badge">
+                                {{ partner.get_component_display }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="budget-info">
+                                <div class="fw-bold">${{ partner.amount_committed|floatformat:0 }}</div>
+                                <small class="text-muted">
+                                    Spent: ${{ partner.amount_spent|floatformat:0 }}
+                                </small>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="progress-container">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <small class="fw-bold {% if partner.progression >= 70 %}text-success{% elif partner.progression >= 40 %}text-warning{% else %}text-danger{% endif %}">
+                                        {{ partner.progression }}%
+                                    </small>
+                                    <small class="text-muted">{{ partner.time_elapsed_percentage|floatformat:0 }}% time</small>
+                                </div>
+                                <div class="progress" style="height: 6px;">
+                                    <div class="progress-bar 
+                                        {% if partner.progression >= 70 %}bg-success
+                                        {% elif partner.progression >= 40 %}bg-warning
+                                        {% else %}bg-danger{% endif %}" 
+                                        style="width: {{ partner.progression }}%">
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="timeline-info">
+                                <small class="d-block text-muted">Ends: {{ partner.contract_end_date }}</small>
+                                <small class="{% if partner.time_remaining < 90 %}text-warning{% else %}text-success{% endif %}">
+                                    {{ partner.time_remaining }} days left
+                                </small>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge 
+                                {% if partner.report_status == 'VPM' %}bg-success
+                                {% elif partner.report_status == 'NR' %}bg-danger
+                                {% elif partner.report_status == 'RP' %}bg-warning
+                                {% else %}bg-secondary{% endif %}">
+                                {{ partner.get_report_status_display }}
+                            </span>
+                        </td>
+                        <td>
+                            {% with risk=partner.progress_vs_time %}
+                            <span class="risk-indicator 
+                                {% if risk < -20 %}high-risk
+                                {% elif risk < -10 %}medium-risk
+                                {% else %}low-risk{% endif %}"
+                                title="Progress vs Time: {{ risk|floatformat:1 }}%">
+                                <i class="bi 
+                                    {% if risk < -20 %}bi-exclamation-triangle-fill text-danger
+                                    {% elif risk < -10 %}bi-exclamation-circle-fill text-warning
+                                    {% else %}bi-check-circle-fill text-success{% endif %}">
+                                </i>
+                            </span>
+                            {% endwith %}
+                        </td>
+                        <td class="pe-4">
+                            <div class="btn-group btn-group-sm">
+                              
+                                <button class="btn btn-outline-secondary" title="Send Message">
+                                    <i class="bi bi-envelope"></i>
+                                </button>
+                                <button class="btn btn-outline-info" title="Schedule Review">
+                                    <i class="bi bi-calendar-plus"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center py-5">
+                            <i class="bi bi-search text-muted fs-1 d-block mb-3"></i>
+                            <h5 class="text-muted">No partners found</h5>
+                            <p class="text-muted mb-0">Try adjusting your search filters</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Pagination -->
+    {% if partners.has_other_pages %}
+    <div class="card-footer bg-white border-0">
+        <nav aria-label="Partners pagination">
+            <ul class="pagination justify-content-center mb-0">
+                {% if partners.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ partners.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_component %}&component={{ current_component }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}">
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+                </li>
+                {% endif %}
+                
+                {% for i in partners.paginator.page_range %}
+                <li class="page-item {% if partners.number == i %}active{% endif %}">
+                    <a class="page-link" href="?page={{ i }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_component %}&component={{ current_component }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}">
+                        {{ i }}
+                    </a>
+                </li>
+                {% endfor %}
+                
+                {% if partners.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ partners.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_component %}&component={{ current_component }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}">
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Quick Actions -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card card-unep shadow-sm">
+            <div class="card-body">
+                <h6 class="text-unep mb-3">Quick Actions</h6>
+                <div class="d-flex gap-2 flex-wrap">
+                    <button class="btn btn-outline-unep btn-sm">
+                        <i class="bi bi-plus-circle me-1"></i>Add New Partner
+                    </button>
+                    <button class="btn btn-outline-unep btn-sm">
+                        <i class="bi bi-envelope me-1"></i>Send Bulk Messages
+                    </button>
+                    <button class="btn btn-outline-unep btn-sm">
+                        <i class="bi bi-download me-1"></i>Export All Data
+                    </button>
+                    <button class="btn btn-outline-unep btn-sm">
+                        <i class="bi bi-printer me-1"></i>Print List
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.partner-avatar {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.component-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+}
+
+.progress-container {
+    min-width: 120px;
+}
+
+.risk-indicator {
+    font-size: 1.1rem;
+}
+
+.partner-row:hover {
+    background-color: rgba(30, 136, 229, 0.04) !important;
+    transform: translateX(2px);
+    transition: all 0.2s ease;
+}
+
+.budget-info {
+    min-width: 80px;
+}
+
+.timeline-info {
+    min-width: 100px;
+}
+
+.text-1 { color: var(--component-1); }
+.text-2 { color: var(--component-2); }
+.text-3 { color: var(--component-3); }
+.text-4 { color: var(--component-4); }
+.text-5 { color: var(--component-5); }
+
+@media (max-width: 768px) {
+    .table-responsive {
+        font-size: 0.875rem;
+    }
+    
+    .btn-group-sm .btn {
+        padding: 0.25rem 0.5rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Recherche en temps réel
+    const searchInput = document.querySelector('input[name="search"]');
+    if (searchInput) {
+        let searchTimeout;
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                this.form.submit();
+            }, 500);
+        });
+    }
+
+    // Filtres automatiques
+    const filters = document.querySelectorAll('select[name="component"], select[name="status"]');
+    filters.forEach(filter => {
+        filter.addEventListener('change', function() {
+            this.form.submit();
+        });
+    });
+
+    // Animation des lignes
+    const partnerRows = document.querySelectorAll('.partner-row');
+    partnerRows.forEach(row => {
+        row.addEventListener('click', function(e) {
+            if (!e.target.closest('a') && !e.target.closest('button')) {
+                const link = this.querySelector('a[href*="/partners/"]');
+                if (link) {
+                    window.location.href = link.href;
+                }
+            }
+        });
+    });
+
+    // Tooltips pour les indicateurs de risque
+    const riskIndicators = document.querySelectorAll('.risk-indicator');
+    riskIndicators.forEach(indicator => {
+        new bootstrap.Tooltip(indicator);
+    });
+});
+</script>
+{% endblock %}

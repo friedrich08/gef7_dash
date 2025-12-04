@@ -1,0 +1,110 @@
+{% load static %}
+{% load custom_filters %}
+<div class="card card-unep shadow-sm mb-4">
+    <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 text-unep">Project Timeline & Extensions</h5>
+        <div class="dropdown">
+            <button class="btn btn-sm btn-outline-unep dropdown-toggle" type="button" id="timelineDropdown" data-bs-toggle="dropdown">
+                <i class="bi bi-calendar me-1"></i>View Options
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item active" href="#" data-view="all">All Events</a></li>
+                <li><a class="dropdown-item" href="#" data-view="extensions">Extensions Only</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="card-body">
+        <div id="timelineChart" style="height: 300px;"></div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const timelineData = JSON.parse('{{ timeline_data|safe }}');
+        
+        // Create a timeline chart using ApexCharts
+        const options = {
+            series: [{
+                data: timelineData
+            }],
+            chart: {
+                height: 300,
+                type: 'rangeBar',
+                toolbar: {
+                    show: true
+                }
+            },
+            plotOptions: {
+                bar: {
+                    horizontal: true,
+                    distributed: true,
+                    dataLabels: {
+                        hideOverflowingLabels: false
+                    }
+                }
+            },
+            dataLabels: {
+                enabled: true,
+                formatter: function(val, opts) {
+                    const partnerName = opts.w.globals.labels[opts.dataPointIndex];
+                    return partnerName;
+                }
+            },
+            xaxis: {
+                type: 'datetime',
+                labels: {
+                    format: 'dd MMM yyyy'
+                }
+            },
+            yaxis: {
+                show: false
+            },
+            grid: {
+                row: {
+                    colors: ['#f3f3f3', 'transparent'],
+                    opacity: 0.5
+                }
+            },
+            tooltip: {
+                x: {
+                    format: 'dd MMM yyyy'
+                },
+                y: {
+                    title: {
+                        formatter: function(seriesName, opts) {
+                            return opts.w.globals.labels[opts.dataPointIndex];
+                        }
+                    }
+                }
+            }
+        };
+        
+        const chart = new ApexCharts(document.querySelector("#timelineChart"), options);
+        chart.render();
+        
+        // Filter timeline events
+        document.querySelectorAll('#timelineDropdown .dropdown-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                document.querySelectorAll('#timelineDropdown .dropdown-item').forEach(i => {
+                    i.classList.remove('active');
+                });
+                this.classList.add('active');
+                
+                const viewType = this.getAttribute('data-view');
+                
+                let filteredData = timelineData;
+                
+                if (viewType === 'extensions') {
+                    // In our case, all timeline events are extensions, but we could filter further if needed
+                }
+                
+                // Update the chart with filtered data
+                chart.updateSeries([{
+                     filteredData
+                }]);
+            });
+        });
+    });
+</script>

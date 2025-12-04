@@ -1,0 +1,233 @@
+{% extends 'partners/base.html' %}
+{% load static %}
+{% load custom_filters %}
+{% block content %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="h3 text-unep fw-bold">GEF 7 Partners Tracking Dashboard</h1>
+                <div>
+                    <button class="btn btn-unep" id="refreshDataBtn">
+                        <i class="bi bi-arrow-clockwise me-1"></i>Refresh Data
+                    </button>
+                </div>
+            </div>
+            <p class="text-muted">Monitoring the progress of partners in the GEF 7 Congo Basin Sustainable Forest Management Project</p>
+        </div>
+    </div>
+    
+    {% include 'partners/components/summary_cards.html' %}
+    
+    <div class="row">
+        <div class="col-lg-8 mb-4">
+            {% include 'partners/components/budget_chart.html' %}
+            {% include 'partners/components/progress_chart.html' %}
+        </div>
+        <div class="col-lg-4 mb-4">
+            {% include 'partners/components/report_status_chart.html' %}
+            {% include 'partners/components/timeline_chart.html' %}
+        </div>
+    </div>
+    
+    <div class="card card-unep shadow-sm mb-4">
+        <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 text-unep">Partners Requiring Action</h5>
+            <span class="badge bg-warning text-dark">{{ partners_needing_extension.count }} Partners</span>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Partner</th>
+                            <th>Component</th>
+                            <th>Progress</th>
+                            <th>Actions Needed</th>
+                            <th>Extension Details</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for partner in partners_needing_extension %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-unep-light rounded-circle p-2 me-2">
+                                        <i class="bi bi-building text-unep"></i>
+                                    </div>
+                                    {{ partner.get_name_display }}
+                                </div>
+                            </td>
+                            <td>{{ partner.get_component_display }}</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="progress flex-grow-1 me-2" style="height: 6px;">
+                                        <div class="progress-bar {% if partner.progression < 50 %}bg-danger{% else %}bg-success{% endif %}" 
+                                             role="progressbar" 
+                                             style="width: {{ partner.progression }}%" 
+                                             aria-valuenow="{{ partner.progression }}" 
+                                             aria-valuemin="0" 
+                                             aria-valuemax="100"></div>
+                                    </div>
+                                    <span>{{ partner.progression }}%</span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge bg-warning text-dark">
+                                    {% if partner.actions_needed %}
+                                        {{ partner.actions_needed|truncatechars:30 }}
+                                    {% else %}
+                                        None specified
+                                    {% endif %}
+                                </span>
+                            </td>
+                            <td>
+                                <small class="text-muted">
+                                    {% if partner.extension_details %}
+                                        {{ partner.extension_details }}
+                                    {% else %}
+                                        Details pending
+                                    {% endif %}
+                                </small>
+                            </td>
+                            <td>
+                                <a href="{% url 'partner_detail' partner.id %}" class="btn btn-sm btn-outline-unep">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-4">
+                                <i class="bi bi-check-circle text-success fs-1 d-block mb-2"></i>
+                                <p class="mb-0">All partners are on track with no extensions needed</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card card-unep shadow-sm">
+        <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 text-unep">Full Partners List</h5>
+            <div class="input-group w-auto">
+                <input type="text" class="form-control form-control-sm" id="searchPartners" placeholder="Search partners...">
+                <span class="input-group-text bg-white border-start-0">
+                    <i class="bi bi-search text-muted"></i>
+                </span>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Partner</th>
+                            <th>Component</th>
+                            <th>Budget Committed</th>
+                            <th>Budget Available</th>
+                            <th>Progress</th>
+                            <th>Report Status</th>
+                            <th>Actions Needed</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for partner in partners %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-unep-light rounded-circle p-2 me-2">
+                                        <i class="bi bi-building text-unep"></i>
+                                    </div>
+                                    {{ partner.get_name_display }}
+                                </div>
+                            </td>
+                            <td>{{ partner.get_component_display }}</td>
+                            <td>${{ partner.amount_committed|floatformat:0 }}</td>
+                            <td>${{ partner.budget_available|floatformat:0 }}</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="progress flex-grow-1 me-2" style="height: 6px;">
+                                        <div class="progress-bar {% if partner.progression < 50 %}bg-danger{% else %}bg-success{% endif %}" 
+                                             role="progressbar" 
+                                             style="width: {{ partner.progression }}%" 
+                                             aria-valuenow="{{ partner.progression }}" 
+                                             aria-valuemin="0" 
+                                             aria-valuemax="100"></div>
+                                    </div>
+                                    <span>{{ partner.progression }}%</span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge {% if partner.report_status == 'VPM' %}bg-success{% elif partner.report_status == 'NR' %}bg-danger{% else %}bg-warning text-dark{% endif %}">
+                                    {{ partner.get_report_status_display }}
+                                </span>
+                            </td>
+                            <td>
+                                <small class="text-muted">
+                                    {% if partner.actions_needed %}
+                                        {{ partner.actions_needed|truncatechars:30 }}
+                                    {% else %}
+                                        None
+                                    {% endif %}
+                                </small>
+                            </td>
+                            <td>
+                                <a href="{% url 'partner_detail' partner.id %}" class="btn btn-sm btn-outline-unep">
+                                    <i class="bi bi-eye"></i> View
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Refresh data button
+        document.getElementById('refreshDataBtn').addEventListener('click', function() {
+            const btn = this;
+            const originalText = btn.innerHTML;
+            
+            btn.innerHTML = '<i class="bi bi-arrow-clockwise bi-spin me-1"></i>Refreshing...';
+            btn.disabled = true;
+            
+            // Simulate data refresh
+            setTimeout(function() {
+                btn.innerHTML = '<i class="bi bi-check-circle me-1"></i>Data Refreshed';
+                
+                setTimeout(function() {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }, 2000);
+            }, 1500);
+        });
+        
+        // Search functionality
+        document.getElementById('searchPartners').addEventListener('keyup', function() {
+            const searchTerm = this.value.toLowerCase();
+            const rows = document.querySelectorAll('table tbody tr');
+            
+            rows.forEach(row => {
+                const partnerName = row.cells[0].textContent.toLowerCase();
+                const componentName = row.cells[1].textContent.toLowerCase();
+                
+                if (partnerName.includes(searchTerm) || componentName.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

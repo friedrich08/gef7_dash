@@ -1,0 +1,131 @@
+:root {
+    --unep-blue: #1e88e5;
+    --unep-blue-dark: #1565c0;
+    --unep-blue-light: #e3f2fd;
+    --unep-blue-subtle: #bbdefb;
+}
+
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.bg-unep {
+    background-color: var(--unep-blue) !important;
+}
+
+.text-unep {
+    color: var(--unep-blue) !important;
+}
+
+.btn-unep {
+    background-color: var(--unep-blue);
+    border-color: var(--unep-blue);
+    color: white;
+}
+
+.btn-unep:hover {
+    background-color: var(--unep-blue-dark);
+    border-color: var(--unep-blue-dark);
+}
+
+.btn-outline-unep {
+    color: var(--unep-blue);
+    border-color: var(--unep-blue);
+}
+
+.btn-outline-unep:hover {
+    background-color: var(--unep-blue);
+    color: white;
+}
+
+.card-unep {
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transition: all 0.3s ease;
+}
+
+.card-unep:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.bg-unep-light {
+    background-color: var(--unep-blue-subtle);
+}
+
+.bg-unep-subtle {
+    background-color: var(--unep-blue-light);
+}
+
+.navbar-dark {
+    background-color: var(--unep-blue-dark) !important;
+}
+
+.unep-logo {
+    height: 30px;
+}
+
+.dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.breadcrumb {
+    background-color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    color: var(--unep-blue);
+}
+
+.badge {
+    font-weight: 500;
+    padding: 0.5em 0.8em;
+}
+
+.progress {
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    transition: width 0.4s ease;
+}
+
+.table th {
+    font-weight: 600;
+    color: #495057;
+    background-color: #f8f9fa;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(30, 136, 229, 0.05);
+}
+
+.accordion-button:not(.collapsed) {
+    color: var(--unep-blue);
+    background-color: var(--unep-blue-subtle);
+    box-shadow: none;
+}
+
+.accordion-button::after {
+    background-image: url("image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%231e88e5'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+}
+
+.alert-warning {
+    background-color: #fff8e1;
+    border-color: #ffecb5;
+    color: #e65100;
+}
+
+.alert-success {
+    background-color: #e8f5e9;
+    border-color: #c8e6c9;
+    color: #1b5e20;
+}
