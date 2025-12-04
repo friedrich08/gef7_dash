@@ -1,325 +1,696 @@
-<!-- partners/templates/partners/reports.html -->
-{% extends 'partners/base.html' %}
-{% load static %}
-{% load custom_filters %}
-{% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h1 class="h2 text-unep fw-bold">Reports & Documentation</h1>
-        <p class="text-muted mb-0">Manage and track all project reports</p>
-    </div>
-    <div class="dropdown">
-        <button class="btn btn-unep dropdown-toggle" type="button" data-bs-toggle="dropdown">
-            <i class="bi bi-plus-circle me-1"></i>New Report
-        </button>
-        <ul class="dropdown-menu dropdown-menu-end">
-            <li><a class="dropdown-item" href="#"><i class="bi bi-file-earmark-text me-2"></i>Progress Report</a></li>
-            <li><a class="dropdown-item" href="#"><i class="bi bi-graph-up me-2"></i>Financial Report</a></li>
-            <li><a class="dropdown-item" href="#"><i class="bi bi-clipboard-data me-2"></i>Activity Report</a></li>
-        </ul>
-    </div>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports & Documentation - GEF 7 Partners Contract Tracking</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    
+    <style>
+        :root {
+            --unep-blue: #1e88e5;
+            --unep-dark-blue: #1565c0;
+            --unep-blue-subtle: rgba(30, 136, 229, 0.1);
+            --border-radius: 8px;
+        }
+        
+        .text-unep {
+            color: var(--unep-blue) !important;
+        }
+        
+        .bg-unep {
+            background-color: var(--unep-blue) !important;
+            color: white !important;
+        }
+        
+        .bg-unep-subtle {
+            background-color: var(--unep-blue-subtle) !important;
+        }
+        
+        .btn-unep {
+            background-color: var(--unep-blue);
+            color: white;
+            border: none;
+        }
+        
+        .btn-unep:hover {
+            background-color: var(--unep-dark-blue);
+            color: white;
+        }
+        
+        .btn-outline-unep {
+            color: var(--unep-blue);
+            border-color: var(--unep-blue);
+        }
+        
+        .btn-outline-unep:hover {
+            background-color: var(--unep-blue);
+            color: white;
+        }
+        
+        .card-unep {
+            border-color: var(--unep-blue);
+        }
+        
+        .progress-bar.bg-success {
+            background-color: #1cc88a !important;
+        }
+        
+        .progress-bar.bg-warning {
+            background-color: #f6c23e !important;
+        }
+        
+        .progress-bar.bg-danger {
+            background-color: #e74a3b !important;
+        }
+        
+        .summary-card {
+            border: 1px solid #e3e6f0;
+            border-radius: var(--border-radius);
+            transition: transform 0.3s;
+        }
+        
+        .summary-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .summary-card .card-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .report-period-card {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef !important;
+            border-radius: var(--border-radius);
+            transition: all 0.3s ease;
+        }
+        
+        .report-period-card:hover {
+            background: white;
+            border-color: var(--unep-blue) !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(30, 136, 229, 0.1);
+        }
+        
+        .document-item {
+            padding: 0.75rem;
+            border-radius: var(--border-radius);
+            transition: background-color 0.2s ease;
+            border-bottom: 1px solid #f1f1f1;
+        }
+        
+        .document-item:last-child {
+            border-bottom: none;
+        }
+        
+        .document-item:hover {
+            background-color: var(--unep-blue-subtle);
+        }
+        
+        .deadline-item {
+            padding: 0.75rem;
+            border-left: 3px solid var(--unep-blue);
+            background: var(--unep-blue-subtle);
+            border-radius: var(--border-radius);
+            margin-bottom: 0.75rem;
+        }
+        
+        .deadline-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .navbar-dark.bg-unep {
+            background: linear-gradient(135deg, var(--unep-blue) 0%, var(--unep-dark-blue) 100%) !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-unep sticky-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="/">
+                <div class="bg-white rounded p-1 me-2">
+                    <i class="bi bi-tree-fill text-unep fs-4"></i>
+                </div>
+                <span class="h5 mb-0">GEF 7 Partners Contract Tracking</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">
+                            <i class="bi bi-speedometer2 me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="partners.html">
+                            <i class="bi bi-people me-1"></i>Partners
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="reports.html">
+                            <i class="bi bi-file-earmark-text me-1"></i>Reports
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="componentsDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-grid me-1"></i>Components
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#">
+                                <i class="bi bi-map text-primary me-2"></i>
+                                Component 1: Land Use Planning
+                            </a></li>
+                            <li><a class="dropdown-item" href="#">
+                                <i class="bi bi-tools text-success me-2"></i>
+                                Component 2: Management Interventions
+                            </a></li>
+                            <li><a class="dropdown-item" href="#">
+                                <i class="bi bi-people-fill text-warning me-2"></i>
+                                Component 3: Community Empowerment
+                            </a></li>
+                            <li><a class="dropdown-item" href="#">
+                                <i class="bi bi-lightbulb text-info me-2"></i>
+                                Component 4: Knowledge Management
+                            </a></li>
+                            <li><a class="dropdown-item" href="#">
+                                <i class="bi bi-gear text-secondary me-2"></i>
+                                Component 5: Program Coordination
+                            </a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="settingsDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person me-1"></i>Admin
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#">
+                                <i class="bi bi-person-circle me-2"></i>Profile
+                            </a></li>
+                            <li><a class="dropdown-item" href="#">
+                                <i class="bi bi-shield-check me-2"></i>Security
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#">
+                                <i class="bi bi-box-arrow-right me-2"></i>Logout
+                            </a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
-<!-- Statistiques des Rapports -->
-<div class="row mb-4">
-    <div class="col-xl-2 col-md-4 mb-3">
-        <div class="card summary-card h-100">
-            <div class="card-body text-center">
-                <div class="text-unep mb-2">
-                    <i class="bi bi-file-earmark-text fs-1"></i>
-                </div>
-                <h3 class="card-title">{{ report_stats.total_reports }}</h3>
-                <p class="card-text text-muted small">Total Reports</p>
+    <div class="container-fluid py-3">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h2 text-unep fw-bold">Reports & Documentation</h1>
+                <p class="text-muted mb-0">Manage and track all project reports</p>
             </div>
-        </div>
-    </div>
-    <div class="col-xl-2 col-md-4 mb-3">
-        <div class="card summary-card h-100">
-            <div class="card-body text-center">
-                <div class="text-success mb-2">
-                    <i class="bi bi-check-circle fs-1"></i>
-                </div>
-                <h3 class="card-title">{{ report_stats.validated }}</h3>
-                <p class="card-text text-muted small">Validated</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-xl-2 col-md-4 mb-3">
-        <div class="card summary-card h-100">
-            <div class="card-body text-center">
-                <div class="text-warning mb-2">
-                    <i class="bi bi-clock fs-1"></i>
-                </div>
-                <h3 class="card-title">{{ report_stats.in_review }}</h3>
-                <p class="card-text text-muted small">In Review</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-xl-2 col-md-4 mb-3">
-        <div class="card summary-card h-100">
-            <div class="card-body text-center">
-                <div class="text-info mb-2">
-                    <i class="bi bi-envelope fs-1"></i>
-                </div>
-                <h3 class="card-title">{{ report_stats.received }}</h3>
-                <p class="card-text text-muted small">Received</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-xl-2 col-md-4 mb-3">
-        <div class="card summary-card h-100">
-            <div class="card-body text-center">
-                <div class="text-danger mb-2">
-                    <i class="bi bi-exclamation-triangle fs-1"></i>
-                </div>
-                <h3 class="card-title">{{ report_stats.not_received }}</h3>
-                <p class="card-text text-muted small">Not Received</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-xl-2 col-md-4 mb-3">
-        <div class="card summary-card h-100">
-            <div class="card-body text-center">
-                <div class="text-secondary mb-2">
-                    <i class="bi bi-percent fs-1"></i>
-                </div>
-                <h3 class="card-title">
-                    {% widthratio report_stats.validated report_stats.total_reports 100 %}%
-                </h3>
-                <p class="card-text text-muted small">Completion Rate</p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="row">
-    <!-- Rapports par Composant -->
-    <div class="col-lg-8">
-        <div class="card card-unep shadow-sm mb-4">
-            <div class="card-header bg-white border-0">
-                <h5 class="mb-0 text-unep">Reports by Component</h5>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th>Component</th>
-                                <th>Total</th>
-                                <th>Validated</th>
-                                <th>Pending</th>
-                                <th>Overdue</th>
-                                <th>Completion</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for report in reports_by_component %}
-                            <tr>
-                                <td>
-                                    <strong>{{ report.component }}</strong>
-                                </td>
-                                <td>{{ report.total }}</td>
-                                <td>
-                                    <span class="badge bg-success">{{ report.validated }}</span>
-                                </td>
-                                <td>
-                                    <span class="badge bg-warning">{{ report.pending }}</span>
-                                </td>
-                                <td>
-                                    <span class="badge bg-danger">{{ report.overdue }}</span>
-                                </td>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <div class="progress flex-grow-1 me-2" style="height: 6px;">
-                                            <div class="progress-bar bg-success" 
-                                                 style="width: {% widthratio report.validated report.total 100 %}%">
-                                            </div>
-                                        </div>
-                                        <small>{% widthratio report.validated report.total 100 %}%</small>
-                                    </div>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- Rapports Récents -->
-        <div class="card card-unep shadow-sm">
-            <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
-                <h5 class="mb-0 text-unep">Recent Reporting Periods</h5>
-                <button class="btn btn-sm btn-outline-unep">
-                    <i class="bi bi-arrow-clockwise me-1"></i>Refresh
+            <div class="dropdown">
+                <button class="btn btn-unep dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                    <i class="bi bi-plus-circle me-1"></i>New Report
                 </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" href="#"><i class="bi bi-file-earmark-text me-2"></i>Progress Report</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="bi bi-graph-up me-2"></i>Financial Report</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="bi bi-clipboard-data me-2"></i>Activity Report</a></li>
+                </ul>
             </div>
-            <div class="card-body">
-                {% for report in recent_reports %}
-                <div class="report-period-card mb-3 p-3 border rounded">
-                    <div class="row align-items-center">
-                        <div class="col-md-3">
-                            <h6 class="mb-1">{{ report.period }}</h6>
-                            <small class="text-muted">Due: {{ report.due_date }}</small>
+        </div>
+
+        <!-- Statistiques des Rapports -->
+        <div class="row mb-4">
+            <div class="col-xl-2 col-md-4 mb-3">
+                <div class="card summary-card h-100">
+                    <div class="card-body text-center">
+                        <div class="text-unep mb-2">
+                            <i class="bi bi-file-earmark-text fs-1"></i>
                         </div>
-                        <div class="col-md-4">
-                            <div class="progress" style="height: 8px;">
-                                <div class="progress-bar 
-                                    {% if report.status == 'completed' %}bg-success
-                                    {% else %}bg-warning{% endif %}" 
-                                    style="width: {% widthratio report.submitted report.total 100 %}%">
+                        <h3 class="card-title">45</h3>
+                        <p class="card-text text-muted small">Total Reports</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-2 col-md-4 mb-3">
+                <div class="card summary-card h-100">
+                    <div class="card-body text-center">
+                        <div class="text-success mb-2">
+                            <i class="bi bi-check-circle fs-1"></i>
+                        </div>
+                        <h3 class="card-title">32</h3>
+                        <p class="card-text text-muted small">Validated</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-2 col-md-4 mb-3">
+                <div class="card summary-card h-100">
+                    <div class="card-body text-center">
+                        <div class="text-warning mb-2">
+                            <i class="bi bi-clock fs-1"></i>
+                        </div>
+                        <h3 class="card-title">8</h3>
+                        <p class="card-text text-muted small">In Review</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-2 col-md-4 mb-3">
+                <div class="card summary-card h-100">
+                    <div class="card-body text-center">
+                        <div class="text-info mb-2">
+                            <i class="bi bi-envelope fs-1"></i>
+                        </div>
+                        <h3 class="card-title">3</h3>
+                        <p class="card-text text-muted small">Received</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-2 col-md-4 mb-3">
+                <div class="card summary-card h-100">
+                    <div class="card-body text-center">
+                        <div class="text-danger mb-2">
+                            <i class="bi bi-exclamation-triangle fs-1"></i>
+                        </div>
+                        <h3 class="card-title">2</h3>
+                        <p class="card-text text-muted small">Not Received</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-2 col-md-4 mb-3">
+                <div class="card summary-card h-100">
+                    <div class="card-body text-center">
+                        <div class="text-secondary mb-2">
+                            <i class="bi bi-percent fs-1"></i>
+                        </div>
+                        <h3 class="card-title">71%</h3>
+                        <p class="card-text text-muted small">Completion Rate</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Rapports par Composant -->
+            <div class="col-lg-8">
+                <div class="card card-unep shadow-sm mb-4">
+                    <div class="card-header bg-white border-0">
+                        <h5 class="mb-0 text-unep">Reports by Component</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Component</th>
+                                        <th>Total</th>
+                                        <th>Validated</th>
+                                        <th>Pending</th>
+                                        <th>Overdue</th>
+                                        <th>Completion</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <strong>Component 1: Land Use Planning</strong>
+                                        </td>
+                                        <td>10</td>
+                                        <td>
+                                            <span class="badge bg-success">8</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-warning">2</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-danger">0</span>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="progress flex-grow-1 me-2" style="height: 6px;">
+                                                    <div class="progress-bar bg-success" style="width: 80%"></div>
+                                                </div>
+                                                <small>80%</small>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <strong>Component 2: Management Interventions</strong>
+                                        </td>
+                                        <td>12</td>
+                                        <td>
+                                            <span class="badge bg-success">9</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-warning">3</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-danger">1</span>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="progress flex-grow-1 me-2" style="height: 6px;">
+                                                    <div class="progress-bar bg-success" style="width: 75%"></div>
+                                                </div>
+                                                <small>75%</small>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <strong>Component 3: Community Empowerment</strong>
+                                        </td>
+                                        <td>8</td>
+                                        <td>
+                                            <span class="badge bg-success">5</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-warning">2</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-danger">1</span>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="progress flex-grow-1 me-2" style="height: 6px;">
+                                                    <div class="progress-bar bg-warning" style="width: 63%"></div>
+                                                </div>
+                                                <small>63%</small>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <strong>Component 4: Knowledge Management</strong>
+                                        </td>
+                                        <td>9</td>
+                                        <td>
+                                            <span class="badge bg-success">7</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-warning">1</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-danger">0</span>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="progress flex-grow-1 me-2" style="height: 6px;">
+                                                    <div class="progress-bar bg-success" style="width: 78%"></div>
+                                                </div>
+                                                <small>78%</small>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <strong>Component 5: Program Coordination</strong>
+                                        </td>
+                                        <td>6</td>
+                                        <td>
+                                            <span class="badge bg-success">3</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-warning">0</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-danger">0</span>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="progress flex-grow-1 me-2" style="height: 6px;">
+                                                    <div class="progress-bar bg-success" style="width: 50%"></div>
+                                                </div>
+                                                <small>50%</small>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rapports Récents -->
+                <div class="card card-unep shadow-sm">
+                    <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 text-unep">Recent Reporting Periods</h5>
+                        <button class="btn btn-sm btn-outline-unep" id="refreshReports">
+                            <i class="bi bi-arrow-clockwise me-1"></i>Refresh
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="report-period-card mb-3 p-3 border rounded">
+                            <div class="row align-items-center">
+                                <div class="col-md-3">
+                                    <h6 class="mb-1">Q4 2024</h6>
+                                    <small class="text-muted">Due: December 31, 2024</small>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="progress" style="height: 8px;">
+                                        <div class="progress-bar bg-success" style="width: 100%"></div>
+                                    </div>
+                                    <small class="text-muted">
+                                        15/15 partners submitted
+                                    </small>
+                                </div>
+                                <div class="col-md-3">
+                                    <span class="badge bg-success">Completed</span>
+                                </div>
+                                <div class="col-md-2 text-end">
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-outline-unep">
+                                            <i class="bi bi-download"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-secondary">
+                                            <i class="bi bi-envelope"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-                            <small class="text-muted">
-                                {{ report.submitted }}/{{ report.total }} partners submitted
-                            </small>
                         </div>
-                        <div class="col-md-3">
-                            <span class="badge 
-                                {% if report.status == 'completed' %}bg-success
-                                {% else %}bg-warning{% endif %}">
-                                {% if report.status == 'completed' %}Completed
-                                {% else %}In Progress{% endif %}
-                            </span>
+                        <div class="report-period-card mb-3 p-3 border rounded">
+                            <div class="row align-items-center">
+                                <div class="col-md-3">
+                                    <h6 class="mb-1">Annual 2024</h6>
+                                    <small class="text-muted">Due: January 31, 2025</small>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="progress" style="height: 8px;">
+                                        <div class="progress-bar bg-warning" style="width: 67%"></div>
+                                    </div>
+                                    <small class="text-muted">
+                                        10/15 partners submitted
+                                    </small>
+                                </div>
+                                <div class="col-md-3">
+                                    <span class="badge bg-warning">In Progress</span>
+                                </div>
+                                <div class="col-md-2 text-end">
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-outline-unep">
+                                            <i class="bi bi-download"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-secondary">
+                                            <i class="bi bi-envelope"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-md-2 text-end">
-                            <div class="btn-group">
-                                <button class="btn btn-sm btn-outline-unep">
-                                    <i class="bi bi-download"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-secondary">
-                                    <i class="bi bi-envelope"></i>
-                                </button>
+                        <div class="report-period-card p-3 border rounded">
+                            <div class="row align-items-center">
+                                <div class="col-md-3">
+                                    <h6 class="mb-1">Q1 2025</h6>
+                                    <small class="text-muted">Due: March 31, 2025</small>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="progress" style="height: 8px;">
+                                        <div class="progress-bar bg-warning" style="width: 20%"></div>
+                                    </div>
+                                    <small class="text-muted">
+                                        3/15 partners submitted
+                                    </small>
+                                </div>
+                                <div class="col-md-3">
+                                    <span class="badge bg-warning">In Progress</span>
+                                </div>
+                                <div class="col-md-2 text-end">
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-outline-unep">
+                                            <i class="bi bi-download"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-secondary">
+                                            <i class="bi bi-envelope"></i>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                {% endfor %}
+            </div>
+
+            <!-- Actions Rapides et Documentation -->
+            <div class="col-lg-4">
+                <!-- Actions Rapides -->
+                <div class="card card-unep shadow-sm mb-4">
+                    <div class="card-header bg-white border-0">
+                        <h5 class="mb-0 text-unep">Quick Actions</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-outline-unep btn-sm text-start" id="sendRemindersBtn">
+                                <i class="bi bi-bell me-2"></i>Send Reminders
+                            </button>
+                            <button class="btn btn-outline-unep btn-sm text-start" id="exportAllBtn">
+                                <i class="bi bi-download me-2"></i>Export All Reports
+                            </button>
+                            <button class="btn btn-outline-unep btn-sm text-start" id="generateSummaryBtn">
+                                <i class="bi bi-printer me-2"></i>Generate Summary
+                            </button>
+                            <button class="btn btn-outline-unep btn-sm text-start" id="scheduleReviewBtn">
+                                <i class="bi bi-calendar me-2"></i>Schedule Review
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Documentation -->
+                <div class="card card-unep shadow-sm mb-4">
+                    <div class="card-header bg-white border-0">
+                        <h5 class="mb-0 text-unep">Documentation</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="document-list">
+                            <div class="document-item d-flex align-items-center mb-3">
+                                <i class="bi bi-file-earmark-pdf text-danger fs-4 me-3"></i>
+                                <div>
+                                    <div class="fw-bold">Reporting Guidelines</div>
+                                    <small class="text-muted">Updated: 2024-01-15</small>
+                                </div>
+                            </div>
+                            <div class="document-item d-flex align-items-center mb-3">
+                                <i class="bi bi-file-earmark-word text-primary fs-4 me-3"></i>
+                                <div>
+                                    <div class="fw-bold">Template: Progress Report</div>
+                                    <small class="text-muted">Updated: 2024-01-10</small>
+                                </div>
+                            </div>
+                            <div class="document-item d-flex align-items-center">
+                                <i class="bi bi-file-earmark-excel text-success fs-4 me-3"></i>
+                                <div>
+                                    <div class="fw-bold">Financial Template</div>
+                                    <small class="text-muted">Updated: 2024-01-08</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Prochains Délais -->
+                <div class="card card-unep shadow-sm">
+                    <div class="card-header bg-white border-0">
+                        <h5 class="mb-0 text-unep">Upcoming Deadlines</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="deadline-list">
+                            <div class="deadline-item mb-3">
+                                <div class="d-flex justify-content-between align-items-start mb-1">
+                                    <strong>Q1 2025 Reports</strong>
+                                    <span class="badge bg-warning">15 days</span>
+                                </div>
+                                <small class="text-muted">Due: March 15, 2025</small>
+                            </div>
+                            <div class="deadline-item mb-3">
+                                <div class="d-flex justify-content-between align-items-start mb-1">
+                                    <strong>Annual Report 2024</strong>
+                                    <span class="badge bg-info">45 days</span>
+                                </div>
+                                <small class="text-muted">Due: January 31, 2025</small>
+                            </div>
+                            <div class="deadline-item">
+                                <div class="d-flex justify-content-between align-items-start mb-1">
+                                    <strong>Financial Audit</strong>
+                                    <span class="badge bg-secondary">60 days</span>
+                                </div>
+                                <small class="text-muted">Due: February 28, 2025</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Actions Rapides et Documentation -->
-    <div class="col-lg-4">
-        <!-- Actions Rapides -->
-        <div class="card card-unep shadow-sm mb-4">
-            <div class="card-header bg-white border-0">
-                <h5 class="mb-0 text-unep">Quick Actions</h5>
-            </div>
-            <div class="card-body">
-                <div class="d-grid gap-2">
-                    <button class="btn btn-outline-unep btn-sm text-start">
-                        <i class="bi bi-bell me-2"></i>Send Reminders
-                    </button>
-                    <button class="btn btn-outline-unep btn-sm text-start">
-                        <i class="bi bi-download me-2"></i>Export All Reports
-                    </button>
-                    <button class="btn btn-outline-unep btn-sm text-start">
-                        <i class="bi bi-printer me-2"></i>Generate Summary
-                    </button>
-                    <button class="btn btn-outline-unep btn-sm text-start">
-                        <i class="bi bi-calendar me-2"></i>Schedule Review
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Documentation -->
-        <div class="card card-unep shadow-sm mb-4">
-            <div class="card-header bg-white border-0">
-                <h5 class="mb-0 text-unep">Documentation</h5>
-            </div>
-            <div class="card-body">
-                <div class="document-list">
-                    <div class="document-item d-flex align-items-center mb-3">
-                        <i class="bi bi-file-earmark-pdf text-danger fs-4 me-3"></i>
-                        <div>
-                            <div class="fw-bold">Reporting Guidelines</div>
-                            <small class="text-muted">Updated: 2024-01-15</small>
-                        </div>
-                    </div>
-                    <div class="document-item d-flex align-items-center mb-3">
-                        <i class="bi bi-file-earmark-word text-primary fs-4 me-3"></i>
-                        <div>
-                            <div class="fw-bold">Template: Progress Report</div>
-                            <small class="text-muted">Updated: 2024-01-10</small>
-                        </div>
-                    </div>
-                    <div class="document-item d-flex align-items-center">
-                        <i class="bi bi-file-earmark-excel text-success fs-4 me-3"></i>
-                        <div>
-                            <div class="fw-bold">Financial Template</div>
-                            <small class="text-muted">Updated: 2024-01-08</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Prochains Délais -->
-        <div class="card card-unep shadow-sm">
-            <div class="card-header bg-white border-0">
-                <h5 class="mb-0 text-unep">Upcoming Deadlines</h5>
-            </div>
-            <div class="card-body">
-                <div class="deadline-list">
-                    <div class="deadline-item mb-3">
-                        <div class="d-flex justify-content-between align-items-start mb-1">
-                            <strong>Q1 2025 Reports</strong>
-                            <span class="badge bg-warning">15 days</span>
-                        </div>
-                        <small class="text-muted">Due: March 15, 2025</small>
-                    </div>
-                    <div class="deadline-item mb-3">
-                        <div class="d-flex justify-content-between align-items-start mb-1">
-                            <strong>Annual Report 2024</strong>
-                            <span class="badge bg-info">45 days</span>
-                        </div>
-                        <small class="text-muted">Due: January 31, 2025</small>
-                    </div>
-                    <div class="deadline-item">
-                        <div class="d-flex justify-content-between align-items-start mb-1">
-                            <strong>Financial Audit</strong>
-                            <span class="badge bg-secondary">60 days</span>
-                        </div>
-                        <small class="text-muted">Due: February 28, 2025</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-{% endblock %}
-
-{% block extra_css %}
-<style>
-.report-period-card {
-    background: #f8f9fa;
-    border: 1px solid #e9ecef !important;
-    transition: all 0.3s ease;
-}
-
-.report-period-card:hover {
-    background: white;
-    border-color: var(--unep-blue) !important;
-    transform: translateY(-1px);
-}
-
-.document-item {
-    padding: 0.5rem;
-    border-radius: var(--border-radius);
-    transition: background-color 0.2s ease;
-}
-
-.document-item:hover {
-    background-color: var(--unep-blue-subtle);
-}
-
-.deadline-item {
-    padding: 0.75rem;
-    border-left: 3px solid var(--unep-blue);
-    background: var(--unep-blue-subtle);
-    border-radius: var(--border-radius);
-}
-</style>
-{% endblock %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Refresh reports button
+        const refreshBtn = document.getElementById('refreshReports');
+        if (refreshBtn) {
+            refreshBtn.addEventListener('click', function() {
+                const originalText = refreshBtn.innerHTML;
+                refreshBtn.innerHTML = '<i class="bi bi-arrow-clockwise bi-spin me-1"></i>Refreshing...';
+                refreshBtn.disabled = true;
+                
+                setTimeout(() => {
+                    refreshBtn.innerHTML = originalText;
+                    refreshBtn.disabled = false;
+                    showNotification('Reports data refreshed successfully!', 'success');
+                }, 1500);
+            });
+        }
+        
+        // Quick actions buttons
+        document.getElementById('sendRemindersBtn').addEventListener('click', function() {
+            showNotification('Reminders sent to all partners with pending reports', 'info');
+        });
+        
+        document.getElementById('exportAllBtn').addEventListener('click', function() {
+            showNotification('Exporting all reports... Download will start shortly', 'info');
+        });
+        
+        document.getElementById('generateSummaryBtn').addEventListener('click', function() {
+            showNotification('Generating summary report...', 'info');
+        });
+        
+        document.getElementById('scheduleReviewBtn').addEventListener('click', function() {
+            showNotification('Opening calendar to schedule review...', 'info');
+        });
+        
+        // Function to show notifications
+        function showNotification(message, type = 'info') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${type === 'success' ? 'success' : type === 'warning' ? 'warning' : 'info'} alert-dismissible fade show position-fixed`;
+            notification.style.cssText = 'top: 20px; right: 20px; z-index: 1050; min-width: 300px;';
+            notification.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
+    });
+    </script>
+</body>
+</html>

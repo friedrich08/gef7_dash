@@ -1,5 +1,3 @@
-{% load static %}
-{% load custom_filters %}
 <div class="card card-unep shadow-sm mb-4">
     <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
         <h5 class="mb-0 text-unep">Budget Allocation by Partner</h5>
@@ -22,11 +20,8 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Données de test si budget_data n'est pas disponible
-    const budgetData = {{ budget_data|safe|default:"[]" }};
-    
-    // Si pas de données, utiliser les données actuelles du projet GEF 7 Congo IP
-    const chartData = budgetData.length > 0 ? budgetData : [
+    // Données de test - données réelles du projet GEF 7 Congo IP
+    const chartData = [
         { label: 'US Forest Service', value: 17436678.6, spent: 553374.6, available: 16883304 },
         { label: 'WCMC', value: 6469000, spent: 350000, available: 6119000 },
         { label: 'CITES MIKE', value: 2389486, spent: 2389486, available: 0 },
@@ -141,4 +136,11 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+</script>
+
+<script src="data.js"></script>
+<script>
+    // Maintenant vous avez accès à GEF7Data et DataUtils
+    console.log('Total partners:', DataUtils.getTotalPartners());
+    console.log('Partners needing extension:', DataUtils.getPartnersNeedingExtension());
 </script>

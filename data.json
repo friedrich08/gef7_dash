@@ -1,0 +1,19 @@
+{
+    "partners": [
+        {
+            "id": 1,
+            "name": "COMIFAC",
+            "displayName": "COMIFAC",
+            "component": "COMP5",
+            "componentDisplay": "Component 5: Program Coordination",
+            "amount_committed": 13206.00,
+            "budget_available": 158741.72,
+            "progression": 100.00,
+            "report_status": "R",
+            "report_status_display": "Received",
+            "actions_needed": "Need to verify the accuracy of reporting of REPELEAC activities 85%, COMIFAC activities are less than 10% progress. Need to see extension 9 max 07/2027, or if we shift activities into GEF 8, and so we need to demish by 55% the budget available in GEF 7",
+            "extension_needed": true,
+            "extension_details": "Need extension until 07/2027"
+        }
+    ]
+}

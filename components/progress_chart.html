@@ -1,6 +1,3 @@
-{% load static %}
-{% load custom_filters %}
-
 <div class="card card-unep shadow-sm mb-4">
     <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
         <h5 class="mb-0 text-unep">Progress by Partner</h5>
@@ -24,22 +21,19 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Données de test si progress_data n'est pas disponible
-        const progressData = {{ progress_data|safe|default:"[]" }};
-        
-        // Si pas de données, utiliser des données de test
-        const chartData = progressData.length > 0 ? progressData : [
-            { label: 'COMIFAC', value: 100 },
-            { label: 'REPALEAC', value: 100 },
-            { label: 'RAIN', value: 100 },
-            { label: 'REWILD', value: 100 },
-            { label: 'UNODC', value: 100 },
-            { label: 'USFS', value: 100 },
+        // Données de test - données statiques pour le projet GEF 7 Congo IP
+        const chartData = [
+            { label: 'US Forest Service', value: 100 },
             { label: 'WCMC', value: 100 },
+            { label: 'CITES MIKE', value: 100 },
+            { label: 'Rainforest Alliance', value: 100 },
             { label: 'WCS', value: 100 },
-            { label: 'WOODWELL', value: 100 },
-            { label: 'LJMU', value: 100 },
-            { label: 'CITES', value: 100 }
+            { label: 'COMIFAC', value: 100 },
+            { label: 'RE:wild', value: 100 },
+            { label: 'Woodwell Climate', value: 100 },
+            { label: 'REPALEAC', value: 100 },
+            { label: 'UNODC', value: 100 },
+            { label: 'LJMU', value: 100 }
         ];
         
         const ctx = document.getElementById('progressChart').getContext('2d');
